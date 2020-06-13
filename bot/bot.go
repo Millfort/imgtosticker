@@ -2,7 +2,7 @@ package bot
 
 import (
 	"bytes"
-	"image/jpeg"
+	"image"
 	"image/png"
 	"log"
 	"net/http"
@@ -36,22 +36,15 @@ func (b *Bot) Start() {
 		if msg == nil {
 			continue
 		}
-		b.handlePhotos(msg)
+		doc := msg.Document
+		if doc == nil {
+			continue
+		}
+		b.handlePhoto(msg.Chat.ID, *doc)
 	}
 }
 
-func (b *Bot) handlePhotos(msg *tgbotapi.Message) {
-	photos := msg.Photo
-	if photos == nil {
-		return
-	}
-	err := b.handlePhoto(msg.Chat.ID, (*photos)[len(*photos)-1])
-	if err != nil {
-		log.Print(err)
-	}
-}
-
-func (b *Bot) handlePhoto(chatID int64, photo tgbotapi.PhotoSize) error {
+func (b *Bot) handlePhoto(chatID int64, photo tgbotapi.Document) error {
 	fileID := photo.FileID
 	fileURL, err := b.api.GetFileDirectURL(fileID)
 	if err != nil {
@@ -63,7 +56,7 @@ func (b *Bot) handlePhoto(chatID int64, photo tgbotapi.PhotoSize) error {
 	}
 	srcFile := resp.Body
 	defer srcFile.Close()
-	srcImg, err := jpeg.Decode(srcFile)
+	srcImg, _, err := image.Decode(srcFile)
 	if err != nil {
 		return err
 	}
