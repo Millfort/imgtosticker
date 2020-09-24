@@ -33,11 +33,14 @@ func New(tgToken string) *Bot {
 func (b *Bot) Start() {
 	for update := range b.updates {
 		msg := update.Message
+		log.Printf("got message")
 		if msg == nil {
+			log.Printf("msg is nil")
 			continue
 		}
 		doc := msg.Document
 		if doc == nil {
+			log.Printf("document is nil")
 			continue
 		}
 		b.handlePhoto(msg.Chat.ID, *doc)

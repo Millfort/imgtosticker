@@ -18,5 +18,6 @@ func init() {
 func main() {
 	token := viper.GetString("token")
 	fitbot := bot.New(token)
+	log.Print("starting bot...")
 	fitbot.Start()
 }
