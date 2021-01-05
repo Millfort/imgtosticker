@@ -33,32 +33,25 @@ type rectangle struct {
 	Height int
 }
 
-// find finds x in x/bx=a/b
-func find(bx, a, b int) int {
-	return (bx * a) / b
-}
-
 func fillImgSize(img image.Point, r rectangle) dimensions {
-	if img.X == r.Width || img.Y == r.Height {
+	if img.X == r.Width && img.Y == r.Height {
 		return dimensions{
 			Width:  img.X,
 			Height: img.Y,
 		}
 	}
-	verticalDiff := img.Y - r.Height
-	horizontalDiff := img.X - r.Width
-	if horizontalDiff >= verticalDiff {
-		width := r.Width
-		height := find(width, img.Y, img.X)
+	rr := float64(r.Width) / float64(r.Height)
+	ir := float64(img.X) / float64(img.Y)
+	if rr > ir {
+		k := float64(r.Height) / float64(img.Y)
 		return dimensions{
-			Width:  width,
-			Height: height,
+			Width:  int(float64(img.X) * k),
+			Height: r.Height,
 		}
 	}
-	height := r.Height
-	width := find(height, img.X, img.Y)
+	k := float64(r.Width) / float64(img.X)
 	return dimensions{
-		Width:  width,
-		Height: height,
+		Width:  r.Width,
+		Height: int(float64(img.Y) * k),
 	}
 }
